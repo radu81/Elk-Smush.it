@@ -332,7 +332,6 @@ function smushit_getFiles($start, $chunk_size, $sort = '', $type = '', $size = 0
 	$db = database();
 
 	// Init
-	$files = array();
 	if ($sort == '')
 		$sort = 'a.id_attach DESC';
 
@@ -689,6 +688,14 @@ function iama_smushit(&$sub_actions)
 			'permission' => 'admin_forum',
 		)
 	);
+
+	// If we are on the attachment maintenance page, add in our helper
+	if (isset($_REQUEST['sa']) && $_REQUEST['sa'] === 'maintenance')
+	{
+		loadLanguage('smushit');
+		loadTemplate('smushit');
+		Template_Layers::getInstance()->addBegin('smushit_maintain');
+	}
 }
 
 /**

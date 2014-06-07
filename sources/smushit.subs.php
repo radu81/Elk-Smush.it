@@ -418,11 +418,11 @@ function smushit_getNumFiles($not_smushed = false)
  * - Calls smush.it on the file, if successful then copy's file back to attachments
  * - updates database with any changes
  *
- * @param array $file
+ * @param mixed[] $file
  */
 function smushitMain($file)
 {
-	global $boarddir, $boardurl, $context, $txt, $modSettings;
+	global $boardurl, $context, $txt, $modSettings;
 
 	$db = database();
 
@@ -431,20 +431,20 @@ function smushitMain($file)
 	require_once (SUBSDIR . '/Graphics.subs.php');
 
 	// Get the actual attachment file location
-	$filename_withpath = getAttachmentFilename($file['filename'], $file['id_attach'], $file['id_folder']);
+	$filename_withpath = getAttachmentFilename($file['filename'], $file['id_attach'], $file['id_folder'], false, $file['file_hash']);
 
 	// We need to copy to the smushit dir so:
 	// 	  a. smush.it can get at it i.e. its in a public location
 	// 	  b. smush.it must have full file names with an appropriate extension or it will not run
 	$filename = basename($filename_withpath) . '.smushit.' . $file['fileext'];
-	$filename_to = $boarddir . '/smushit/' . $filename;
+	$filename_to = BOARDDIR . '/smushit/' . $filename;
 
 	// Lets try to CHMOD the smush.it dir if needed.
-	if (!is_writable($boarddir . '/smushit'))
-		@chmod($boarddir . '/smushit', 0755);
+	if (!is_writable(BOARDDIR . '/smushit'))
+		@chmod(BOARDDIR . '/smushit', 0755);
 
 	// Make a copy of the attachment to process
-	if (@copy($filename_withpath, $filename_to))
+	if (copy($filename_withpath, $filename_to))
 	{
 		// Build a URL to our "new" public file ... and send it to smush.it
 		$fileurl = $boardurl . '/smushit/' . $filename;
@@ -517,7 +517,7 @@ function smushitMain($file)
 					else
 						$context['smushit_results'][$file['id_attach']] = $file['filename'] . $file['width'] . $file['height'] . '|' . $txt['smushit_attachments_verify'];
 				}
-				// not allowed to change the file format so skip it
+				// Not allowed to change the file format so skip it
 				else
 					$context['smushit_results'][$file['id_attach']] = $file['filename'] . '|' . $txt['smushit_attachments_noformatchange'] . $smushit_url;
 			}
@@ -571,6 +571,7 @@ function SmushitSelect()
 	if (!empty($_POST['smushit']))
 	{
 		$attachments = array();
+		loadLanguage('smushit');
 
 		// All the attachments that have been selected to smush.it
 		foreach ($_POST['smushit'] as $smushID => $dummy)
@@ -626,10 +627,10 @@ function SmushitSelect()
 						// Keep track of the size savings
 						if (preg_match('~.*\((\d*)\).*~', $result, $thissavings))
 							$savings += $thissavings[1];
-						$truth_or_consequence .= '<img src="' . $settings['images_url'] . '/icons/field_valid.gif"/> ' . $filename . ': ' . $result;
+						$truth_or_consequence .= '<img src="' . $settings['images_url'] . '/icons/field_valid.png"/> ' . $filename . ': ' . $result;
 					}
 					else
-						$truth_or_consequence .= '<img src="' . $settings['images_url'] . '/icons/field_invalid.gif"/> ' . $filename . ': ' . $result;
+						$truth_or_consequence .= '<img src="' . $settings['images_url'] . '/icons/field_invalid.png"/> ' . $filename . ': ' . $result;
 
 					$truth_or_consequence .= '<br />';
 				}
@@ -745,6 +746,7 @@ function scheduled_smushit()
 	// Need to do this so we have some basic $txt available.
 	loadEssentialThemeData();
 	loadLanguage('Admin');
+	loadLanguage('smushit');
 
 	// Get the large files
 	$size = (!empty($modSettings['smushit_attachments_size']) ? 1024 * $modSettings['smushit_attachments_size'] : 0);

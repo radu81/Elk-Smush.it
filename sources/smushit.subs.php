@@ -444,7 +444,7 @@ function smushitMain($file)
 		@chmod(BOARDDIR . '/smushit', 0755);
 
 	// Make a copy of the attachment to process
-	if (copy($filename_withpath, $filename_to))
+	if (@copy($filename_withpath, $filename_to))
 	{
 		// Build a URL to our "new" public file ... and send it to smush.it
 		$fileurl = $boardurl . '/smushit/' . $filename;
@@ -485,9 +485,24 @@ function smushitMain($file)
 					$sizes = @getimagesize($filename_to);
 					if ($sizes !== false && $sizes[0] == $file['width'] && $sizes[1] == $file['height'] && checkImageContents($filename_to))
 					{
+						// Can we can copy over the original file
+						if (!is_writable($filename_withpath))
+						{
+							$orig_perm = @fileperms($filename_withpath);
+							@chmod($filename_withpath, 0664);
+							clearstatcache();
+						}
+
 						// No turning back now .. onward men !!
 						if (@copy($filename_to, $filename_withpath))
 						{
+							// In the slim chance he perm changed worked, try to set it back to what it was
+							if (isset($orig_perm))
+							{
+								@chmod($filename_withpath, $orig_perm);
+								unset($orig_perm);
+							}
+
 							$savings = intval($data->src_size) - intval($data->dest_size);
 							$context['smushit_results']['+' . $file['id_attach']] = $file['filename'] . '|' . sprintf($txt['smushit_attachments_reduction'] . " %01.1f%% (%s) bytes", $data->percent, $savings);
 

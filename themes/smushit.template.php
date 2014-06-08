@@ -72,8 +72,8 @@ function template_smushit_maintain_below()
 
 	echo '
 	<h3 class="category_header">', $txt['smushit_attachment_check'], '</h3>
-	<div class="windowbg">
-		<div class="content">
+	<div id="manage_boards" class="windowbg">
+		<div class="content" style="margin-top: -10px">
 			<form action="', $scripturl, '?action=admin;area=manageattachments;sa=smushit;', $context['session_var'], '=', $context['session_id'], '" method="post" accept-charset="UTF-8">
 				<p>', $txt['smushit_attachment_check_desc'], '</p><br />
 				', $txt['smushit_attachments_age'], ' <input type="text" name="smushitage" value="25" size="4" class="input_text" /> ', $txt['days_word'], '<br />

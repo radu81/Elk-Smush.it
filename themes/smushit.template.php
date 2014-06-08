@@ -1,5 +1,8 @@
 <?php
 
+/**
+ *
+ */
 function template_attachment_smushit()
 {
 	global $context, $txt, $settings;
@@ -11,7 +14,7 @@ function template_attachment_smushit()
 		<h3 class="category_header">', $txt['smushit_attachments_complete'], '</h3>
 		<div class="content">
 			<p>', $txt['smushit_attachments_complete_desc'], '</p>
-			<table class="table_grid" cellspacing="0" width="100%">
+			<table class="table_grid">
 				<thead>
 					<tr class="table_header">
 						<th class="first_th"></th>
@@ -43,13 +46,13 @@ function template_attachment_smushit()
 				$alternate = !$alternate;
 				$i++;
 
-				// keep track of how great we are
+				// Keep track of how great we are
 				if ($count != 0 && preg_match('~.*\((\d*)\).*~', $result, $thissavings))
 					$savings += $thissavings[1];
 			}
 		}
 
-		// Show the total savings in some form the user will understnad
+		// Show the total savings in some form the user will understand
 		$units = array('B', 'KB', 'MB', 'GB', 'TB');
 		$savings = max($savings, 0);
 		$pow = floor(($savings ? log($savings) : 0) / log(1024));
@@ -66,6 +69,9 @@ function template_attachment_smushit()
 	}
 }
 
+/**
+ * Maintainance section, injected in the layer via ->add
+ */
 function template_smushit_maintain_below()
 {
 	global $txt, $scripturl;
@@ -75,7 +81,8 @@ function template_smushit_maintain_below()
 	<div id="manage_boards" class="windowbg">
 		<div class="content" style="margin-top: -10px">
 			<form action="', $scripturl, '?action=admin;area=manageattachments;sa=smushit;', $context['session_var'], '=', $context['session_id'], '" method="post" accept-charset="UTF-8">
-				<p>', $txt['smushit_attachment_check_desc'], '</p><br />
+				<p>', $txt['smushit_attachment_check_desc'], '</p>
+				<br />
 				', $txt['smushit_attachments_age'], ' <input type="text" name="smushitage" value="25" size="4" class="input_text" /> ', $txt['days_word'], '<br />
 				<input type="submit" name="submit" value="', $txt['smushit_attachment_now'], '" class="right_submit" />
 			</form>

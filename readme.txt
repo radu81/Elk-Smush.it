@@ -31,5 +31,4 @@ This modification is released under a MPL V1.1 license, a copy of it with its pr
 [/list]
 
 [color=blue][b][size=12pt][u]Installation[/u][/size][/b][/color]
-Simply install the package to install this modification on the Default theme.
-Manual edits may be required for other themes if they use custom admin templates.
+Simply install the package to install this addon.

@@ -24,5 +24,4 @@ The software is licensed under [Mozilla Public License 1.1 (MPL-1.1)](http://ope
 * I ran Smush.it and now the file does not show up in the browse list! This means the file was reduced in size below your lower size setting (admin -> configuration -> modification settings -> misc -> Attempt to Sumsh.it all attachments larger than)
 
 ###Installation
-Simply install the package to install this addon on the ElkArte Default theme.
-Manual edits may be required for other themes if they use custom admin templates.
+Simply install the package to install this addon on ElkArte.

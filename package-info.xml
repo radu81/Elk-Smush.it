@@ -16,7 +16,7 @@
  */
 ]]></license>
 
-	<install for="1.0 Beta - 1.0.99">
+	<install for="1.0 RC1 - 1.0.99">
 		<readme type="file" parsebbc="true">readme.txt</readme>
 		<database>add_settings.php</database>
 		<require-file name="sources/smushit.subs.php" destination="SUBSDIR" />
@@ -31,7 +31,7 @@
 		<redirect url="index.php?action=admin;area=addonsettings;sa=general" timeout="5000">redirect.txt</redirect>
 	</install>
 
-	<uninstall for="1.0 Beta - 1.0.99">
+	<uninstall for="1.0 RC1 - 1.0.99">
 		<hook reverse="true" hook="integrate_general_mod_settings" file="SUBSDIR/smushit.subs.php" function="igm_smushit" />
 		<hook reverse="true" hook="integrate_sa_manage_attachments" file="SUBSDIR/smushit.subs.php" function="iama_smushit" />
 		<hook reverse="true" hook="integrate_list_attach_browse" file="SUBSDIR/smushit.subs.php" function="ilab_smushit" />

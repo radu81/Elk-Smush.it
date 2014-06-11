@@ -74,7 +74,7 @@ function template_attachment_smushit()
  */
 function template_smushit_maintain_below()
 {
-	global $txt, $scripturl;
+	global $txt, $scripturl, $context;
 
 	echo '
 	<h3 class="category_header">', $txt['smushit_attachment_check'], '</h3>

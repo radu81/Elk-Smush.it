@@ -16,27 +16,31 @@
  */
 ]]></license>
 
-	<install for="1.0 RC1 - 1.0.99">
+	<install for="1.0 - 1.0.99">
 		<readme type="file" parsebbc="true">readme.txt</readme>
+		<license type="inline">This ElkArte addon is released under a MPL V1.1 license, a copy of it with its provisions is included with the package.</license>
 		<database>add_settings.php</database>
 		<require-file name="sources/smushit.subs.php" destination="SUBSDIR" />
 		<require-file name="themes/smushit.english.php" destination="LANGUAGEDIR/english" />
 		<require-file name="themes/smushit.template.php" destination="THEMEDIR" />
 		<require-dir name="smushit" destination="BOARDDIR" />
+
 		<hook hook="integrate_general_mod_settings" file="SUBSDIR/smushit.subs.php" function="igm_smushit" />
 		<hook hook="integrate_sa_manage_attachments" file="SUBSDIR/smushit.subs.php" function="iama_smushit" />
 		<hook hook="integrate_list_attach_browse" file="SUBSDIR/smushit.subs.php" function="ilab_smushit" />
 		<hook hook="integrate_list_scheduled_tasks" file="SUBSDIR/smushit.subs.php" function="ilst_smushit" />
 		<hook hook="integrate_sa_manage_maintenance" file="SUBSDIR/smushit.subs.php" function="ismm_smushit" />
+
 		<redirect url="index.php?action=admin;area=addonsettings;sa=general" timeout="5000">redirect.txt</redirect>
 	</install>
 
-	<uninstall for="1.0 RC1 - 1.0.99">
+	<uninstall for="1.0 - 1.0.99">
 		<hook reverse="true" hook="integrate_general_mod_settings" file="SUBSDIR/smushit.subs.php" function="igm_smushit" />
 		<hook reverse="true" hook="integrate_sa_manage_attachments" file="SUBSDIR/smushit.subs.php" function="iama_smushit" />
 		<hook reverse="true" hook="integrate_list_attach_browse" file="SUBSDIR/smushit.subs.php" function="ilab_smushit" />
 		<hook reverse="true" hook="integrate_list_scheduled_tasks" file="SUBSDIR/smushit.subs.php" function="ilst_smushit" />
 		<hook reverse="true" hook="integrate_sa_manage_maintenance" file="SUBSDIR/smushit.subs.php" function="ismm_smushit" />
+
 		<database>remove_settings.php</database>
 		<remove-file name="SUBSDIR/smushit.subs.php" />
 		<remove-file name="LANGUAGEDIR/english/smushit.english.php" />

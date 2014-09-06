@@ -1,7 +1,8 @@
 <?php
 
 /**
- *
+ * Displays the list of attachments and current smushed status
+ * Shows results of a smushit run on the selected files
  */
 function template_attachment_smushit()
 {

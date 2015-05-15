@@ -3,7 +3,7 @@
 <package-info xmlns="http://www.elkarte.net/site/package-info" xmlns:elk="http://www.elkarte.net/">
 	<name>Smush.it!</name>
 	<id>spuds:Smush.it</id>
-	<version>0.1</version>
+	<version>0.2</version>
 	<type>addon</type>
 	<license><![CDATA[
 /**
@@ -12,7 +12,7 @@
  * @author spuds
  * @license MPL 1.1 http://mozilla.org/MPL/1.1/
  *
- * @version 0.1
+ * @version 0.2
  */
 ]]></license>
 
@@ -23,7 +23,6 @@
 		<require-file name="sources/smushit.subs.php" destination="SUBSDIR" />
 		<require-file name="themes/smushit.english.php" destination="LANGUAGEDIR/english" />
 		<require-file name="themes/smushit.template.php" destination="THEMEDIR" />
-		<require-dir name="smushit" destination="BOARDDIR" />
 
 		<hook hook="integrate_general_mod_settings" file="SUBSDIR/smushit.subs.php" function="igm_smushit" />
 		<hook hook="integrate_sa_manage_attachments" file="SUBSDIR/smushit.subs.php" function="iama_smushit" />
@@ -45,7 +44,6 @@
 		<remove-file name="SUBSDIR/smushit.subs.php" />
 		<remove-file name="LANGUAGEDIR/english/smushit.english.php" />
 		<remove-file name="THEMEDIR/smushit.template.php" />
-		<remove-dir name="BOARDDIR/smushit" />
 	</uninstall>
 
 </package-info>

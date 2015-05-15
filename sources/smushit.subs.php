@@ -6,7 +6,7 @@
  * @copyright (c) 2014 Spuds
  * @license Mozilla Public License version 1.1 http://www.mozilla.org/MPL/1.1/.
  *
- * @version 0.1
+ * @version 0.2
  *
  */
 
@@ -48,11 +48,13 @@ function smushitAttachments()
 
 		// Save the form post values for future loops
 		$_SESSION['smushitage'] = (time() - 24 * 60 * 60 * (int) $_POST['smushitage']);
-		$_SESSION['smushitsize'] = (!empty($modSettings['smushit_attachments_size']) ? 1024 * $modSettings['smushit_attachments_size'] : 0);
+		$_SESSION['smushitsize'] = (!empty($modSettings['smushit_attachments_size'])
+			? 1024 * $modSettings['smushit_attachments_size'] : 0);
 	}
 
 	// Set up this pass through the loop so we know which data chunk to work on
-	$images = (isset($_SESSION['smushit_images'])) ? $_SESSION['smushit_images'] : 0;
+	$images = (isset($_SESSION['smushit_images']))
+		? $_SESSION['smushit_images'] : 0;
 	if (isset($_SESSION['smushit_results']))
 		$context['smushit_results'] = $_SESSION['smushit_results'];
 
@@ -99,6 +101,7 @@ function pauseAttachmentSmushit($max_steps = 0)
 	if (array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start)) > 30)
 	{
 		$context['smushit_results'][9999999] = '|' . $txt['smushit_attachments_timeout'] . ' ' . array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start));
+
 		return;
 	}
 
@@ -189,7 +192,6 @@ function SmushitBrowse()
 						global $txt;
 						return sprintf(\'%1$s%2$s\', round($rowData[\'size\'] / 1024, 2), $txt[\'kilobyte\']);
 					'),
-					'class' => 'windowbg',
 				),
 				'sort' => array(
 					'default' => 'a.size DESC',
@@ -205,7 +207,6 @@ function SmushitBrowse()
 						global $txt;
 						return (($rowData[\'smushit\'] == 0) ? $txt[\'no\'] : $txt[\'yes\']);
 					'),
-					'class' => 'windowbg',
 				),
 				'sort' => array(
 					'default' => 'a.smushit DESC',
@@ -238,8 +239,7 @@ function SmushitBrowse()
 						// The date the message containing the attachment was posted
 						$date = empty($rowData[\'poster_time\']) ? $txt[\'never\'] : standardTime($rowData[\'poster_time\']);
 						return $date;
-						'),
-					'class' => 'windowbg',
+					'),
 				),
 				'sort' => array(
 					'default' => 'm.poster_time',
@@ -273,8 +273,8 @@ function SmushitBrowse()
 			),
 			array(
 				'position' => 'after_title',
-				'value' => isset($_SESSION['truth_or_consequence']) ? $_SESSION['truth_or_consequence'] : $txt['smushit_attachment_check_desc'],
-				'class' => 'windowbg2',
+				'value' => isset($_SESSION['truth_or_consequence'])
+					? $_SESSION['truth_or_consequence'] : $txt['smushit_attachment_check_desc'],
 			),
 		),
 		'list_menu' => array(
@@ -324,6 +324,8 @@ function SmushitBrowse()
  * @param string $type
  * @param int $size
  * @param string $age
+ *
+ * @return array $files
  */
 function smushit_getFiles($start, $chunk_size, $sort = '', $type = '', $size = 0, $age = '')
 {
@@ -349,8 +351,8 @@ function smushit_getFiles($start, $chunk_size, $sort = '', $type = '', $size = 0
 		WHERE a.attachment_type = {int:attach}
 			AND a.size BETWEEN {int:attach_size} AND 1024000
 			AND (a.fileext = \'jpg\' OR a.fileext = \'png\' OR a.fileext = \'gif\')' .
-			(($age != '') ? 'AND m.poster_time > {int:poster_time} ' : '') .
-			(($type != '') ? 'AND a.smushit = {int:smushit}' : '') . '
+		(($age != '') ? 'AND m.poster_time > {int:poster_time} ' : '') .
+		(($type != '') ? 'AND a.smushit = {int:smushit}' : '') . '
 		ORDER BY {raw:sort}
 		' . ((!empty($chunk_size)) ? 'LIMIT {int:offset}, {int:limit} ' : ''),
 		array(
@@ -394,11 +396,12 @@ function smushit_getNumFiles($not_smushed = false)
 			AND a.size BETWEEN {int:attach_size} AND 1024000
 			AND m.poster_time > {int:poster_time}
 			AND (a.fileext = \'jpg\' OR a.fileext = \'png\' OR a.fileext = \'gif\')' .
-			(($not_smushed) ? 'AND a.smushit = {int:smushit}' : ''),
+		(($not_smushed) ? 'AND a.smushit = {int:smushit}' : ''),
 		array(
 			'attach' => 0,
 			'smushit' => 0,
-			'attach_size' => !empty($modSettings['smushit_attachment_size']) ? 1024 * $modSettings['smushit_attachment_size'] : 0,
+			'attach_size' => !empty($modSettings['smushit_attachment_size'])
+				? 1024 * $modSettings['smushit_attachment_size'] : 0,
 			'poster_time' => isset($_POST['smushitage']) ? (time() - 24 * 60 * 60 * (int) $_POST['smushitage']) : 0,
 		)
 	);
@@ -422,124 +425,58 @@ function smushit_getNumFiles($not_smushed = false)
  */
 function smushitMain($file)
 {
-	global $boardurl, $context, $txt, $modSettings;
+	global $context, $txt;
 
 	$db = database();
 
 	// Some needed functions
-	require_once (SUBSDIR . '/Package.subs.php');
-	require_once (SUBSDIR . '/Graphics.subs.php');
+	require_once(SOURCEDIR . '/CurlFetchWebdata.class.php');
+	require_once(SUBSDIR . '/Graphics.subs.php');
 
 	// Get the actual attachment file location
 	$filename_withpath = getAttachmentFilename($file['filename'], $file['id_attach'], $file['id_folder'], false, $file['file_hash']);
 
-	// We need to copy to the smushit dir so:
-	// 	  a. smush.it can get at it i.e. its in a public location
-	// 	  b. smush.it must have full file names with an appropriate extension or it will not run
-	$filename = basename($filename_withpath) . '.smushit.' . $file['fileext'];
-	$filename_to = BOARDDIR . '/smushit/' . $filename;
+	// Read in the file data, we will pass this to the smush.it service
+	$file_data = file_get_contents($filename_withpath);
 
-	// Lets try to CHMOD the smush.it dir if needed.
-	if (!is_writable(BOARDDIR . '/smushit'))
-		@chmod(BOARDDIR . '/smushit', 0755);
+	// Send in the data for processing
+	$fetch_data = make_smushit_request($file, $file_data);
 
-	// Make a copy of the attachment to process
-	if (@copy($filename_withpath, $filename_to))
+	// Success on the request?
+	if ($fetch_data && $fetch_data->result('code') == 200 && !$fetch_data->result('error'))
 	{
-		// Build a URL to our "new" public file ... and send it to smush.it
-		$fileurl = $boardurl . '/smushit/' . $filename;
-		$address = 'http://www.smushit.com/ysmush.it/ws.php?img=' . urlencode($fileurl);
-		$data = fetch_web_data($address);
+		// Parse the JSON response
+		$response = json_decode($fetch_data->result('body'));
 
-		// Success on the web fetch and the data returned is a JSON response?
-		if ($data !== false && (strpos(trim($data), '{') === 0))
+		// We have a valid response and an image and a size savings then we continue on like lemmings.
+		if ($response && $response->success == true)
 		{
-			// Parse the JSON response
-			$data = json_decode($data);
-
-			// We have both a size savings and a nice new image to grab?  if so then we continue on like lemmings.
-			if (!isset($data->error) && intval($data->dest_size) != -1 && isset($data->dest))
+			// We have and image and a size savings then we continue on like lemmings.
+			if ((!empty($response->data->bytes_saved) && intval($response->data->bytes_saved) > 0 && !empty($response->data->image)))
 			{
-				// Need to make sure the returned URL is fully qualified so fetch web can get it
-				$smushit_url = urldecode(stripcslashes($data->dest));
-				if (strpos($smushit_url, 'http://') != 0)
-					$smushit_url = 'http://www.smushit.com/' . $smushit_url;
+				// Decode the image in the response
+				$image = base64_decode($response->data->image);
+				$image_md5 = md5($response->data->image);
 
-				// See what kind of image file we got back and if we are allowed to change it if needed.
-				$smushit_ext = strtolower(substr($smushit_url, strrpos($smushit_url, '.') + 1));
-				if ((strtolower($file['fileext']) == 'gif' && $smushit_ext == 'png' && isset($modSettings['smushit_attachments_png'])) || (strtolower($file['fileext']) == $smushit_ext))
+				// Corruption is not an option
+				if ($response->data->image_md5 == $image_md5)
 				{
-					// Things are cool ... download the smushed image file, overwriting the public one we created
-					$smushit_file = fopen($filename_to, 'wb');
-					if ($smushit_file)
-					{
-						$fileContents = fetch_web_data($smushit_url);
-						fwrite($smushit_file, $fileContents);
-						fclose($smushit_file);
-					}
+					// See what kind of image file we got back and if we are allowed to change it if needed.
+					$tempfile = $filename_withpath . '.tmp';
 
-					// Trust but verify ... ok really don't trust at all ... just verify that the returned file is good
-					//  a) an image
-					//  b) the same WxH dimensional size
-					//  c) free of any hitchhikers
-					$sizes = @getimagesize($filename_to);
-					if ($sizes !== false && $sizes[0] == $file['width'] && $sizes[1] == $file['height'] && checkImageContents($filename_to))
-					{
-						// Can we can copy over the original file
-						if (!is_writable($filename_withpath))
-						{
-							$orig_perm = @fileperms($filename_withpath);
-							@chmod($filename_withpath, 0664);
-							clearstatcache();
-						}
+					// Save the image to a .tmp file
+					file_put_contents($tempfile, $image);
 
-						// No turning back now .. onward men !!
-						if (@copy($filename_to, $filename_withpath))
-						{
-							// In the slim chance he perm changed worked, try to set it back to what it was
-							if (isset($orig_perm))
-							{
-								@chmod($filename_withpath, $orig_perm);
-								unset($orig_perm);
-							}
-
-							$savings = intval($data->src_size) - intval($data->dest_size);
-							$context['smushit_results']['+' . $file['id_attach']] = $file['filename'] . '|' . sprintf($txt['smushit_attachments_reduction'] . " %01.1f%% (%s) bytes", $data->percent, $savings);
-
-							// Update the attachment database with the new file size and potentially new type / mime (gif-png)
-							$db->query('', '
-								UPDATE {db_prefix}attachments
-								SET size = {int:size},
-									fileext = {string:ext},
-									mime_type = {string:mime},
-									smushit = {int:smushit}
-								WHERE id_attach = {int:id_attach}
-								LIMIT 1',
-								array(
-									'size' => $data->dest_size,
-									'ext' => $smushit_ext,
-									'mime' => (isset($sizes['mime']) ? $sizes['mime'] : 'image/' . $smushit_ext),
-									'id_attach' => $file['id_attach'],
-									'smushit' => 1,
-								)
-							);
-						}
-						// Image failed to copy back to the attach directory
-						else
-							$context['smushit_results'][$file['id_attach']] = $file['filename'] . '|' . $txt['smushit_attachments_copyfail'];
-					}
-					// Image failed validation, skipping
-					else
-						$context['smushit_results'][$file['id_attach']] = $file['filename'] . $file['width'] . $file['height'] . '|' . $txt['smushit_attachments_verify'];
+					// See what we really have now
+					save_smushit_file($tempfile, $filename_withpath, $file, $response);
 				}
-				// Not allowed to change the file format so skip it
 				else
-					$context['smushit_results'][$file['id_attach']] = $file['filename'] . '|' . $txt['smushit_attachments_noformatchange'] . $smushit_url;
+					$context['smushit_results'][$file['id_attach']] = $file['filename'] . '|' . $txt['smushit_attachments_corrupt'];
 			}
+			// No savings in size possible, mark it as smushed so we don't try again
 			else
 			{
-				// No savings in size possible, mark it as smushed then
-				if (isset($data->dest_size) && $data->dest_size == -1)
+				if (isset($response->data->bytes_saved) && $response->data->bytes_saved <= 0)
 				{
 					$db->query('', '
 						UPDATE {db_prefix}attachments
@@ -554,19 +491,137 @@ function smushitMain($file)
 				}
 
 				// Just a general smush.it error or no savings message
-				$context['smushit_results'][$file['id_attach']] = $file['filename'] . '|' . ((isset($data->dest_size) && $data->dest_size == -1) ? $txt['smushit_attachments_nosavings'] : $txt['smushit_attachments_error'] . ' ' . $data->error);
+				$context['smushit_results'][$file['id_attach']] = $file['filename'] . '|' . $txt['smushit_attachments_nosavings'];
 			}
 		}
-		// Error on the web_fetch_data or a non JSON result ...
+		// Failure on the smushit size, invalid response bad image, to big, other
 		else
-			$context['smushit_results'][$file['id_attach']] = $file['filename'] . '|' . $txt['smushit_attachments_network'];
-
-		// Done with this one, make sure we clean up after ourselves
-		@unlink($filename_to);
+			$context['smushit_results'][$file['id_attach']] = $file['filename'] . '|' . $txt['smushit_attachments_error'] . ' ' . $response->success;
 	}
-	// Could not copy the file to boarddir ... permissions, missing file, other?
+
+	// Done with this one, make sure we clean up after ourselves
+	unset($result, $image, $response);
+}
+
+/**
+ * Validates the returned image is good
+ * If all tests pass, the returned image is saved in place of the existing one
+ *
+ * @param string $tempfile
+ * @param string $filename_withpath
+ * @param array $file
+ * @param object $response
+ */
+function save_smushit_file($tempfile, $filename_withpath, $file, $response)
+{
+	global $txt, $context, $modSettings;
+
+	$db = database();
+
+	// See what we really have now
+	$sizes = @getimagesize($tempfile);
+	$known = array(1 => 'gif', 	2 => 'jpg', 3 => 'png', 9 => 'jpg');
+	$smushit_ext = (isset($sizes[2], $known[$sizes[2]])) ? $known[$sizes[2]] : 'na';
+
+	// Things are cool with the returned file type?
+	if ((strtolower($file['fileext']) === 'gif' && $smushit_ext === 'png' && isset($modSettings['smushit_attachments_png'])) || (strtolower($file['fileext']) == $smushit_ext))
+	{
+		// Trust but verify ... ok really don't trust at all ... just verify that the returned file is good
+		//  a) an image
+		//  b) the same WxH dimensional size
+		//  c) free of any hitchhikers
+		if ($sizes !== false && $sizes[0] == $file['width'] && $sizes[1] == $file['height'] && checkImageContents($tempfile))
+		{
+			// Can we can copy over the original file
+			if (!is_writable($filename_withpath))
+			{
+				$orig_perm = @fileperms($filename_withpath);
+				@chmod($filename_withpath, 0664);
+				clearstatcache();
+			}
+
+			// No turning back now .. onward men !!
+			if (@copy($tempfile, $filename_withpath))
+			{
+				// In the slim chance the perm changed worked, try to set it back to what it was
+				if (isset($orig_perm))
+				{
+					@chmod($filename_withpath, $orig_perm);
+					unset($orig_perm);
+				}
+
+				$context['smushit_results']['+' . $file['id_attach']] = $file['filename'] . '|' . sprintf($txt['smushit_attachments_reduction'] . " %01.1f%% (%s) bytes", $response->data->compression, $response->data->bytes_saved);
+
+				// Update the attachment database with the new file size and potentially new type / mime (gif-png)
+				$db->query('', '
+					UPDATE {db_prefix}attachments
+					SET size = {int:size},
+						fileext = {string:ext},
+						mime_type = {string:mime},
+						smushit = {int:smushit}
+					WHERE id_attach = {int:id_attach}
+					LIMIT 1',
+					array(
+						'size' => $response->data->after_size,
+						'ext' => $smushit_ext,
+						'mime' => (isset($sizes['mime']) ? $sizes['mime'] : 'image/' . $smushit_ext),
+						'id_attach' => $file['id_attach'],
+						'smushit' => 1,
+					)
+				);
+			}
+			// Image failed to copy back to the attach directory
+			else
+				$context['smushit_results'][$file['id_attach']] = $file['filename'] . '|' . $txt['smushit_attachments_copyfail'];
+		}
+		// Image failed validation, skipping
+		else
+			$context['smushit_results'][$file['id_attach']] = $file['filename'] . $file['width'] . $file['height'] . '|' . $txt['smushit_attachments_verify'];
+	}
+	// Not allowed to change the file format so skip it
 	else
-		$context['smushit_results'][$file['id_attach']] = $file['filename'] . '|' . $txt['smushit_attachments_copyerror'];
+		$context['smushit_results'][$file['id_attach']] = $file['filename'] . '|' . $txt['smushit_attachments_noformatchange'];
+}
+
+
+/**
+ * Make the curl call to the smushit service
+ *
+ * @param array $file
+ * @param string $file_data
+ *
+ * @return bool|Curl_Fetch_Webdata
+ */
+function make_smushit_request($file, $file_data)
+{
+	global $context, $txt;
+
+	if (!empty($file_data))
+	{
+		// Standard headers
+		$headers = array(
+			'accept' => 'application/json',
+			'content-type' => 'application/binary',
+			'lossy' => 'false',
+		);
+
+		// Going to need Curl to make this call happen
+		$fetch_data = new Curl_Fetch_Webdata(array(CURLOPT_HTTPHEADER => $headers, CURLOPT_TIMEOUT => 30));
+		$fetch_data->get_url_data('https://smushpro.wpmudev.org/1.0/', $file_data);
+
+		// Free up some space
+		unset($file_data);
+
+		if ($fetch_data->result('error'))
+			$context['smushit_results'][$file['id_attach']] = $file['filename'] . '|' . $txt['smushit_attachments_error'] . ' ' . $fetch_data->result('error');
+
+		return $fetch_data;
+	}
+	// Error on the web_fetch_data or a non JSON result ...
+	else
+		$context['smushit_results'][$file['id_attach']] = $file['filename'] . '|' . $txt['smushit_attachments_network'];
+
+	return false;
 }
 
 /**
@@ -764,7 +819,8 @@ function scheduled_smushit()
 	loadLanguage('smushit');
 
 	// Get the large files
-	$size = (!empty($modSettings['smushit_attachments_size']) ? 1024 * $modSettings['smushit_attachments_size'] : 0);
+	$size = (!empty($modSettings['smushit_attachments_size']) ? 1024 * $modSettings['smushit_attachments_size']
+		: 0);
 
 	// Use a bit a buffer to look back a couple of days, smush.it can be down from time to time
 	$age = time() - (72 * 60 * 60);

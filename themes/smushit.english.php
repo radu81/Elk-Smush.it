@@ -13,6 +13,7 @@ $txt['smushit_attachments_complete_desc'] = 'Smush.it has finished running on yo
 $txt['smushit_attachments_network'] = 'The Smush.it service did not return any results for this file';
 $txt['smushit_attachments_reduction'] = 'Smush.it reduced this file by';
 $txt['smushit_attachments_timeout'] = 'Smush.it processing time exceeded';
+$txt['smushit_attachments_corrupt'] = 'Smush.it returned a corrupt image';
 $txt['smushit_attachments_age'] = 'Sumsh.it attachments from the last';
 $txt['smushit_attachments_png'] = 'Allow Sumsh.it to convert .gif files to .png files if it will save space<div class="smalltext">Some gif files when saved as png will save space</div>';
 $txt['smushit_attachments_noformatchange'] = 'File skipped, Smush.it wanted to change the file format (gif-png)';

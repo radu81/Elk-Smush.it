@@ -797,11 +797,13 @@ function igm_smushit(&$config_vars)
 {
 	loadLanguage('smushit');
 
-	$config_vars += array(
+	if (!empty($config_vars))
+		$config_vars = array_merge($config_vars, array(''));
+
+	$config_vars = array_merge($config_vars, array(
 		array('check', 'smushit_attachments_png'),
 		array('int', 'smushit_attachment_size'),
-		'',
-	);
+	));
 }
 
 /**

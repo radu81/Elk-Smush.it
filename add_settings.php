@@ -43,7 +43,7 @@ $rows[] = array(
 		'disabled' => 'int',
 		'task' => 'string',
 	),
-	'data' => array (1231542000, 39620, 1, 'd', 1, 'smushit'),
+	'data' => array (1231542000, 39620, 1, 'd', 1, 'scheduled_smushit'),
 	'keys' => array('id_task'),
 );
 

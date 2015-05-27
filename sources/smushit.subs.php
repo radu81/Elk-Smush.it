@@ -583,7 +583,6 @@ function save_smushit_file($tempfile, $filename_withpath, $file, $response)
 		$context['smushit_results'][$file['id_attach']] = $file['filename'] . '|' . $txt['smushit_attachments_noformatchange'];
 }
 
-
 /**
  * Make the curl call to the smushit service
  *
@@ -813,8 +812,6 @@ function scheduled_smushit()
 {
 	global $modSettings;
 
-	require_once(SOURCEDIR . '/smushit.subs.php');
-
 	// Need to do this so we have some basic $txt available.
 	loadEssentialThemeData();
 	loadLanguage('Admin');
@@ -824,7 +821,7 @@ function scheduled_smushit()
 	$size = (!empty($modSettings['smushit_attachments_size']) ? 1024 * $modSettings['smushit_attachments_size']
 		: 0);
 
-	// Use a bit a buffer to look back a couple of days, smush.it can be down from time to time
+	// Use a bit of a buffer to look back a couple of days, smush.it can be down from time to time
 	$age = time() - (72 * 60 * 60);
 
 	// Load the attachment files that  match
@@ -847,7 +844,7 @@ function scheduled_smushit()
 /**
  * Integration hook, Called from attachment controller, integrate_list_attach_browse,
  *
- * - Adds one more browser type to the mix (actually called form createlist)
+ * - Adds one more browser type to the mix (actually called from createlist)
  *
  * @param mixed[] $listOptions
  */
@@ -866,7 +863,7 @@ function ilab_smushit(&$listOptions)
 
 /**
  * Integration hook, integrate_list_scheduled_tasks, called from ManageScheduledTasks.controller,
- * (actually called form createlist)
+ * (actually called from createlist)
  *
  * @param mixed[] $listOptions
  */

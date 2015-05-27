@@ -29,6 +29,7 @@
 		<hook hook="integrate_list_attach_browse" file="SUBSDIR/smushit.subs.php" function="ilab_smushit" />
 		<hook hook="integrate_list_scheduled_tasks" file="SUBSDIR/smushit.subs.php" function="ilst_smushit" />
 		<hook hook="integrate_sa_manage_maintenance" file="SUBSDIR/smushit.subs.php" function="ismm_smushit" />
+		<hook hook="integrate_autotask_include" function="SUBSDIR/smushit.subs.php" />
 
 		<redirect url="index.php?action=admin;area=addonsettings;sa=general" timeout="5000">redirect.txt</redirect>
 	</install>
@@ -39,6 +40,7 @@
 		<hook reverse="true" hook="integrate_list_attach_browse" file="SUBSDIR/smushit.subs.php" function="ilab_smushit" />
 		<hook reverse="true" hook="integrate_list_scheduled_tasks" file="SUBSDIR/smushit.subs.php" function="ilst_smushit" />
 		<hook reverse="true" hook="integrate_sa_manage_maintenance" file="SUBSDIR/smushit.subs.php" function="ismm_smushit" />
+		<hook reverse="true" hook="integrate_autotask_include" function="SUBSDIR/smushit.subs.php" />
 
 		<database>remove_settings.php</database>
 		<remove-file name="SUBSDIR/smushit.subs.php" />

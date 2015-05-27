@@ -20,7 +20,7 @@ global $modSettings;
 $db = database();
 $dbtbl = db_table();
 
-// List all mod settingss here to REMOVE
+// List all mod settings here to REMOVE
 $mod_settings_to_remove = array(
 	'smushit_attachments_age',
 	'smushit_attachments_png',
@@ -44,7 +44,7 @@ $db->query('', '
 	DELETE FROM {db_prefix}scheduled_tasks
 	WHERE task = {string:name}',
 	array(
-		'name' => 'smushit',
+		'name' => 'scheduled_smushit',
 	)
 );
 

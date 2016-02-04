@@ -5,7 +5,7 @@
  * @copyright Spuds
  * @license   MPL 1.1 http://mozilla.org/MPL/1.1/
  *
- * @version 0.1
+ * @version 0.3
  *
  */
 

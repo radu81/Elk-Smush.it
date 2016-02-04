@@ -3,7 +3,7 @@
 <package-info xmlns="http://www.elkarte.net/site/package-info" xmlns:elk="http://www.elkarte.net/">
 	<name>Smush.it!</name>
 	<id>spuds:Smush.it</id>
-	<version>0.2</version>
+	<version>0.3</version>
 	<type>addon</type>
 	<license><![CDATA[
 /**

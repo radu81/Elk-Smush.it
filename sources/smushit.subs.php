@@ -6,7 +6,7 @@
  * @copyright (c) 2014 Spuds
  * @license Mozilla Public License version 1.1 http://www.mozilla.org/MPL/1.1/.
  *
- * @version 0.2
+ * @version 0.3
  *
  */
 
@@ -16,8 +16,8 @@ if (!defined('ELK'))
 /**
  * Batch processing of attachments from the attachment file maintenance section
  *
- * - runs as a paused loop to prevent overload
- * - can be slow ;)
+ * - Runs as a paused loop to prevent overload
+ * - Can be slow ;)
  */
 function smushitAttachments()
 {
@@ -48,13 +48,11 @@ function smushitAttachments()
 
 		// Save the form post values for future loops
 		$_SESSION['smushitage'] = (time() - 24 * 60 * 60 * (int) $_POST['smushitage']);
-		$_SESSION['smushitsize'] = (!empty($modSettings['smushit_attachments_size'])
-			? 1024 * $modSettings['smushit_attachments_size'] : 0);
+		$_SESSION['smushitsize'] = (!empty($modSettings['smushit_attachments_size']) ? 1024 * $modSettings['smushit_attachments_size'] : 0);
 	}
 
 	// Set up this pass through the loop so we know which data chunk to work on
-	$images = (isset($_SESSION['smushit_images']))
-		? $_SESSION['smushit_images'] : 0;
+	$images = (isset($_SESSION['smushit_images'])) ? $_SESSION['smushit_images'] : 0;
 	if (isset($_SESSION['smushit_results']))
 		$context['smushit_results'] = $_SESSION['smushit_results'];
 
@@ -124,10 +122,10 @@ function pauseAttachmentSmushit($max_steps = 0)
 /**
  * Show a list of attachment files available for smush.it
  *
- * - called by ?action=admin;area=manageattachments;sa=smushit
- * - uses the 'browse' sub template
- * - allows sorting by name, date, size and smush.it.
- * - paginates results.
+ * - Called by ?action=admin;area=manageattachments;sa=smushit
+ * - Uses the 'browse' sub template
+ * - Allows sorting by name, date, size and smush.it.
+ * - Paginates results.
  */
 function SmushitBrowse()
 {
@@ -448,7 +446,7 @@ function smushitMain($file)
 		// Parse the JSON response
 		$response = json_decode($fetch_data->result('body'));
 
-		// We have a valid response and an image and a size savings then we continue on like lemmings.
+		// We have a valid response ?
 		if ($response && $response->success == true)
 		{
 			// We have and image and a size savings then we continue on like lemmings.
@@ -469,6 +467,9 @@ function smushitMain($file)
 
 					// See what we really have now
 					save_smushit_file($tempfile, $filename_withpath, $file, $response);
+
+					// Saved or not we need to clean up
+					@unlink($tempfile);
 				}
 				else
 					$context['smushit_results'][$file['id_attach']] = $file['filename'] . '|' . $txt['smushit_attachments_corrupt'];

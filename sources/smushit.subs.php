@@ -218,7 +218,7 @@ function SmushitBrowse()
 				'data' => array(
 					'function' => create_function('$rowData', '
 						global $txt, $scripturl;
-						return sprintf(\'%1$s <a href="%2$s?topic=%3$d.msg%4$d#msg%4$d">%5$s</a>\', $txt[\'in\'], $scripturl, $rowData[\'id_topic\'], $rowData[\'id_msg\'], $rowData[\'subject\']);
+						return sprintf(\'%1$s <a href="%2$s?topic=%3$d.0.msg%4$d#msg%4$d">%5$s</a>\', $txt[\'in\'], $scripturl, $rowData[\'id_topic\'], $rowData[\'id_msg\'], $rowData[\'subject\']);
 					'),
 				),
 				'sort' => array(
